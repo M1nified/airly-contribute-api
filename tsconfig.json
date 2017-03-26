@@ -1,0 +1,24 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "module": "none",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "index.js",
+        "sourceMap": true,
+        "target": "es6"
+    },
+    "files": [
+        "typings/airly.ts",
+        "typings/v1/v1.ts",
+        "typings/v1/heatmap.ts",
+        "typings/v1/heatmap.*.ts",
+        "typings/v1/mapPoint.ts",
+        "typings/v1/mapPoint.*.ts",
+        "typings/v1/sensor.ts",
+        "typings/v1/sensor.*.ts",
+        "typings/v1/sensors.ts",
+        "typings/v1/sensors.*.ts"
+    ]
+}
