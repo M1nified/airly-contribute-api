@@ -4,11 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "download": "node index download",
+    "export": "node index export",
+    "cycle": "npm run download && npm run export",
+    "start": "npm run cycle",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "airly": "^1.0.0",
     "nedb": "^1.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.2.2"
   }
 }
