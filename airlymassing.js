@@ -1,45 +1,29 @@
-const Datastore = require('nedb');
 const fs = require('fs');
-const https = require('https');
-const querystring = require('querystring');
+
+const Airly = require('airly');
+
+function getMeasurementValue(measurements, name) {
+  for (const measurement of measurements) {
+    if (measurement.name.toLowerCase() === name.toLowerCase())
+      return measurement.value;
+  }
+}
 
 exports.sensorToId = sensor => typeof sensor === 'object' ? sensor.id : sensor;
 exports.downloadHistory = (config, db) => {
+
+  const airly = new Airly(config.apikey);
 
   config.sensors.forEach(sensor => {
 
     let sensorId = exports.sensorToId(sensor);
     console.log(sensorId);
-    let query = querystring.stringify({
-      apikey: config.apikey,
-      sensorId: sensorId,
-      historyHours: 24,
-      historyResolutionHours: 1
-    })
-
-    let request = https.get({
-      headers: {
-        accept: 'application/json'
-        // apikey: config.apikey
-      },
-      hostname: 'airapi.airly.eu',
-      path: `/v1/sensor/measurements?${query}`
-    }, result => {
-      console.log(result.statusCode);
-      result.setEncoding('utf8');
-      let rawData = '';
-      result.on('data', (chunk) => rawData += chunk);
-      result.on('end', () => {
-        try {
-          let data = JSON.parse(rawData);
-          data.history.forEach(hist => {
-            db.history[sensorId].insert(hist);
-          });
-        } catch (e) {
-          console.log(e.message);
-        }
-      });
-    })
+    airly.idData(sensor)
+      .then(data => {
+        data.history.forEach(hist => {
+          db.history[sensorId].insert(hist);
+        });
+      })
 
   });
 
@@ -53,14 +37,14 @@ exports.exportHistoryCSV = (config, db) => {
           sensorId: sensorId,
           fromDateTime: data.fromDateTime,
           tillDateTime: data.tillDateTime,
-          airQualityIndex: data.measurements.airQualityIndex,
-          pm1: data.measurements.pm1,
-          pm25: data.measurements.pm25,
-          pm10: data.measurements.pm10,
-          pressure: data.measurements.pressure,
-          humidity: data.measurements.humidity,
-          temperature: data.measurements.temperature,
-          pollutionLevel: data.measurements.pollutionLevel
+          AIRLY_CAQI: getMeasurementValue(data.indexes, 'AIRLY_CAQI'),
+          pm1: getMeasurementValue(data.values, 'pm1'),
+          pm25: getMeasurementValue(data.values, 'pm25'),
+          pm10: getMeasurementValue(data.values, 'pm10'),
+          pressure: getMeasurementValue(data.values, 'pressure'),
+          humidity: getMeasurementValue(data.values, 'humidity'),
+          temperature: getMeasurementValue(data.values, 'temperature'),
+          pollutionLevel: getMeasurementValue(data.values, 'pollutionLevel')
         }))];
 
         let strRows = [Object.keys(rows[0]).join(';'), ...rows.map(row => (
