@@ -37,7 +37,6 @@ exports.exportHistoryCSV = (config, db) => {
           sensorId: sensorId,
           fromDateTime: data.fromDateTime,
           tillDateTime: data.tillDateTime,
-          airQualityIndex: null,
           AIRLY_CAQI: getMeasurementValue(data.indexes, 'AIRLY_CAQI'),
           pm1: getMeasurementValue(data.values, 'pm1'),
           pm25: getMeasurementValue(data.values, 'pm25'),
